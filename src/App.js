@@ -1,24 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import { useStore, useList } from 'effector-react'
+import React, { useState } from 'react'
+import { useStore } from 'effector-react'
 
 import './App.css'
 
 import { countries as countryList } from './api/store'
-import { confirmedByCountry as confirmedList } from './api/store'
-import { fetchConfirmed } from './api/effects'
+import { casesByCountry as casesList } from './api/store'
+import { fetchCases } from './api/effects'
+
+const List = () => {
+  const cases = useStore(casesList)
+
+  const list = cases.map(({ Date, Cases }, index) => (
+    <li key={`${index}:${Date}`}>
+      [{index}] Date: {Date} <span>{Cases}</span>
+    </li>
+  ))
+
+  return <ul>{list}</ul>
+}
 
 function App() {
-  const [country, setCountry] = useState('United Kingdom')
-
-  useEffect(() => {
-    console.log(`set country ${country}`)
-    fetchConfirmed(country)
-  }, [country])
-
+  const [country, setCountry] = useState('united-kingdom')
   const countries = useStore(countryList)
-  const confirmed = useStore(confirmedList)
 
-  console.log(confirmed.length)
+  console.log('calling me?')
 
   const optionItems = countries.map((country, index) => (
     <option key={index + country.Slug} value={country.Slug}>
@@ -26,21 +31,19 @@ function App() {
     </option>
   ))
 
-  const list = useList(confirmedList, ({ Date, Cases }, index) => (
-    <li>
-      [{index}] Date: {Date} <span>{Cases}</span>
-    </li>
-  ))
+  const update = id => {
+    console.log(`id: ${id}`)
+    setCountry(id)
+    fetchCases(id)
+  }
 
   return (
     <div className="App">
       <header className="App-header">
-        <p>{country}</p>
-        <select value={country} onChange={e => setCountry(e.target.value)}>
-          {optionItems}
-        </select>
+        <p>Selected: {country}</p>
+        <select value={country} onChange={e => update(e.target.value)}>{optionItems}</select>
       </header>
-      <ul>{list}</ul>
+      <List />
     </div>
   )
 }

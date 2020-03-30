@@ -1,13 +1,13 @@
 import { createStore } from 'effector'
-import { fetchCountries, fetchConfirmed } from './effects'
+import { fetchCountries, fetchCases } from './effects'
 
 export const countries = createStore([]).on(
   fetchCountries.doneData,
   (state, countries) => countries
 )
 
-export const confirmedByCountry = createStore([]).on(
-  fetchConfirmed.doneData,
+export const casesByCountry = createStore([]).on(
+  fetchCases.doneData,
   (state, countries) => countries
 )
 
