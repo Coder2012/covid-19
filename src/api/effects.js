@@ -10,11 +10,16 @@ export const fetchCountries = createEffect({
 
 export const fetchCases = createEffect({
   async handler(country) {
-    const res = await fetch(
-      `https://api.covid19api.com/total/country/${country}/status/confirmed`
-    )
-
-    console.log('cases')
-    return res.json()
+    try {
+      const res = await fetch(`https://api.covid19api.com/total/country/${country}/status/deaths`)
+      return res.json()
+    } catch (err) {
+      console.log(`Error fetching ${country}: ${err}`)
+    }
   },
+})
+
+fetchCases.fail.watch(({ error, params }) => {
+  console.error(error)
+  console.error(params)
 })
