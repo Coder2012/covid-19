@@ -50,20 +50,14 @@ function App() {
 
   const chart = createRef()
   const countries = useStore(countryList)
-  const cases = useStore(casesList)
 
   const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
 
-  const updateChart = (list = []) => {
+  casesList.watch((list = []) => {
     if (chart.current) chart.current.setseriesdata({
       data: selectedCountries.map(it => ({ values: (list['deaths'] || {})[it], text: it })),
     })
-  }
-  casesList.watch(updateChart)
-
-  useEffect(() => {
-    updateChart(cases)
-  }, [selectedCountries]) // eslint-disable-line
+  })
 
   const update = (countries) => {
     setSelectedCountries(countries)
