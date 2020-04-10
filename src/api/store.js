@@ -14,6 +14,7 @@ const uiInitialState = {
 export const setCountriesCases = createEvent()
 export const incrementLoading = createEvent()
 export const decrementLoading = createEvent()
+export const setSelectedCountries = createEvent()
 export const setConfirmed = createEvent()
 export const setRecovered = createEvent()
 export const setDeaths = createEvent()
@@ -24,7 +25,19 @@ const caseEvents = {
   deaths: setDeaths,
 }
 
+// const mockData = [
+//   { Country: 'United Kingdom', CountryCode: '', Lat: '0', Lon: '0', Cases: 7111, Status: 'deaths', Date: '2020-04-08T00:00:00Z' },
+//   { Country: 'United Kingdom', CountryCode: '', Lat: '0', Lon: '0', Cases: 7993, Status: 'deaths', Date: '2020-04-09T00:00:00Z' },
+// ]
+
+const config = {
+  type: 'line',
+  series: [{}],
+}
+
 export const countryList = createStore([]).on(fetchCountries.doneData, (state, countries) => countries)
+export const selectedCountries = createStore(['united-kingdom', 'italy']).on(setSelectedCountries, (state, countries) => countries)
+selectedCountries.watch(console.log)
 
 export const ui = createStore(uiInitialState)
   .on(incrementLoading, (state) => ({ ...state, loading: state.loading + 1 }))
@@ -40,13 +53,21 @@ const recovered = createStore({}).on(setRecovered, (state, { country, cases }) =
   [country]: cases,
 }))
 
-// const deaths = createStore({}).on(setDeaths, (state, { country, cases }) => console.log(country, cases))
+// export const deaths = createStore({}).on(setDeaths, (state, { country, cases }) => console.log(country, cases))
 
-export const deaths = createStore({}).on(setDeaths, (state, { country, cases }) => ({
+// context.setChartConfig({
+//       ...config,
+//       series: selectedCountries.map((countryName) => ({ values: (state['deaths'][countryName] || []).map(({ Cases }) => Cases) })),
+//     })
+
+const mockData = [{ values: [1, 2, 4, 5, 6] }, { values: [2, 4, 6, 8, 10] }]
+
+// {Country: "United Kingdom", CountryCode: "", Lat: "0", Lon: "0", Cases: 0}
+
+export const deaths = createStore(config).on(setDeaths, (state, { country, cases }) => ({
   ...state,
-  [country]: cases,
+  series: [...state.series, { values: cases.map(cases => cases.Cases) }],
 }))
-
 
 export const cases = combine({ confirmed, recovered, deaths })
 

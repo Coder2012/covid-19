@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ZingChart from 'zingchart-react'
-import 'zingchart-react/dist/modules/zingchart-depth.min.js';
+import 'zingchart-react/dist/modules/zingchart-depth.min.js'
 import { useStore } from 'effector-react'
 import { MultiSelect } from 'react-sm-select'
-import { countryList, cases, ui, fetchCases, deaths } from './api/store'
+import { countryList, cases, ui, fetchCases, deaths as getDeaths, selectedCountries as getSelectedCountries, setSelectedCountries } from './api/store'
 import 'react-sm-select/dist/styles.css'
 import './App.css'
 
@@ -28,20 +28,11 @@ const Loading = () => {
     </div>
   )
 }
-const config = {
-  type: 'line',
-  series: [{}],
-}
 
 function App() {
-  const d = useStore(deaths)
-  const [chartConfig, setChartConfig] = useState(config)
-  const context = {setChartConfig}
-  const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
-
-  useEffect(() => {
-    console.log('render')
-  }, [(d.spain || []).length])
+  const deaths = useStore(getDeaths)
+  console.log(deaths)
+  const selectedCountries = useStore(getSelectedCountries)
 
   // useEffect(() => {
   //   cases.watch(state => {
@@ -66,12 +57,11 @@ function App() {
 
   return (
     <div className="App">
-      <p>HERE:{(d.spain || []).length}</p>
       <header className="App-header">
         <MultiSelect id="country-list" enableSearch mode={'tags'} options={options} value={selectedCountries} onChange={update} />
       </header>
       <section className="App-content">
-        <ZingChart key={Date.now()} data={chartConfig} series={chartConfig.series} />
+        <ZingChart key={Date.now()} data={deaths} />
       </section>
       <footer className="App-footer">
         <p>Neil Brown - 2020</p>
