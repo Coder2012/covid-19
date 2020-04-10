@@ -34,18 +34,6 @@ function App() {
   console.log(deaths)
   const selectedCountries = useStore(getSelectedCountries)
 
-  // useEffect(() => {
-  //   cases.watch(state => {
-  //     // console.log(state)
-  //     context.setChartConfig({
-  //       ...config,
-  //       series: selectedCountries.map((countryName) => ({ values: (state['deaths'][countryName] || []).map(({ Cases }) => Cases) })),
-  //     })
-  //   })
-  // }, [])
-
-  // console.log(JSON.stringify(chartConfig.series))
-
   const countries = useStore(countryList)
 
   const options = [...countries].sort((a, b) => a.Country.localeCompare(b.Country)).map(({ Slug, Country }) => ({ value: Slug, label: Country }))

@@ -53,16 +53,7 @@ const recovered = createStore({}).on(setRecovered, (state, { country, cases }) =
   [country]: cases,
 }))
 
-// export const deaths = createStore({}).on(setDeaths, (state, { country, cases }) => console.log(country, cases))
-
-// context.setChartConfig({
-//       ...config,
-//       series: selectedCountries.map((countryName) => ({ values: (state['deaths'][countryName] || []).map(({ Cases }) => Cases) })),
-//     })
-
 const mockData = [{ values: [1, 2, 4, 5, 6] }, { values: [2, 4, 6, 8, 10] }]
-
-// {Country: "United Kingdom", CountryCode: "", Lat: "0", Lon: "0", Cases: 0}
 
 export const deaths = createStore(config).on(setDeaths, (state, { country, cases }) => ({
   ...state,
