@@ -47,3 +47,8 @@
 .hide-loader {
   display: none;
 }
+
+#country-list {
+  font-size: 16px;
+  width: 100%;
+}

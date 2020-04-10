@@ -1,9 +1,8 @@
 import React from 'react'
 import { Chart } from 'react-charts'
-import styles from './index.css'
+import './index.css'
 
 export const LineChart = ({ cases }) => {
-  console.log(styles)
   let chartData = []
 
   if (cases.length === 0) {
@@ -26,20 +25,20 @@ export const LineChart = ({ cases }) => {
         label: 'Series 1',
         data: chartData,
       },
-      // {
-      //   label: 'Series 2',
-      //   data: [
-      //     [0, 0],
-      //     [1, 100],
-      //     [2, 1000],
-      //     [3, 2000],
-      //     [5, 3000],
-      //     [6, 3500],
-      //     [7, 3700],
-      //     [8, 3800],
-      //     [9, 3850],
-      //   ],
-      // },
+      {
+        label: 'Series 2',
+        data: [
+          [0, 0],
+          [1, 100],
+          [2, 1000],
+          [3, 2000],
+          [5, 3000],
+          [6, 3500],
+          [7, 3700],
+          [8, 3800],
+          [9, 3850],
+        ],
+      },
     ],
     [chartData]
   )

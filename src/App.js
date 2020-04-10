@@ -1,25 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import ZingChart from 'zingchart-react'
+import 'zingchart-react/dist/modules/zingchart-depth.min.js';
 import { useStore } from 'effector-react'
-import { countries as countryList } from './api/store'
-import { casesByCountry as casesList } from './api/store'
-import { fetchCases } from './api/effects'
-import { LineChart } from './components/LineChart'
+import { MultiSelect } from 'react-sm-select'
+import { countryList, cases, ui, fetchCases, deaths } from './api/store'
+import 'react-sm-select/dist/styles.css'
 import './App.css'
 
-const Status = () => {
-  const cases = useStore(casesList)
-  return cases
-    .map(({ Date: date, Cases }, index) => (
-      <section key={`${index}:${date}`}>
-        <p>{new Date(date).toDateString()}</p>
-        <p>Deaths: {Cases}</p>
-      </section>
-    ))
-    .slice(cases.length - 1)
-}
-
 const Loading = () => {
-  const loading = useStore(fetchCases.pending)
+  const { loading } = useStore(ui)
   return (
     <div className={loading ? 'show-loader' : 'hide-loader'}>
       <svg width="120" height="30" xmlns="http://www.w3.org/2000/svg" fill="#fff">
@@ -39,38 +28,50 @@ const Loading = () => {
     </div>
   )
 }
+const config = {
+  type: 'line',
+  series: [{}],
+}
 
 function App() {
-  const cases = useStore(casesList)
-  const [country, setCountry] = useState('')
-  const [countryLabel, setCountryLabel] = useState('Choose country')
+  const d = useStore(deaths)
+  const [chartConfig, setChartConfig] = useState(config)
+  const context = {setChartConfig}
+  const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
+
+  useEffect(() => {
+    console.log('render')
+  }, [(d.spain || []).length])
+
+  // useEffect(() => {
+  //   cases.watch(state => {
+  //     // console.log(state)
+  //     context.setChartConfig({
+  //       ...config,
+  //       series: selectedCountries.map((countryName) => ({ values: (state['deaths'][countryName] || []).map(({ Cases }) => Cases) })),
+  //     })
+  //   })
+  // }, [])
+
+  // console.log(JSON.stringify(chartConfig.series))
+
   const countries = useStore(countryList)
 
-  const optionItems = [...countries]
-    .sort((a, b) => a.Country.localeCompare(b.Country))
-    .map((country, index) => (
-      <option key={index + country.Slug} value={country.Slug}>
-        {country.Country}
-      </option>
-    ))
+  const options = [...countries].sort((a, b) => a.Country.localeCompare(b.Country)).map(({ Slug, Country }) => ({ value: Slug, label: Country }))
 
-  const update = ({ value, selectedIndex, options }) => {
-    setCountry(value)
-    setCountryLabel(options[selectedIndex].text)
-    fetchCases(value)
+  const update = (countries) => {
+    setSelectedCountries(countries)
+    countries.map((country) => fetchCases(country))
   }
 
   return (
     <div className="App">
+      <p>HERE:{(d.spain || []).length}</p>
       <header className="App-header">
-        <p>{countryLabel}</p>
-        <select className="App-select" value={country} onChange={event => update(event.target)}>
-          {optionItems}
-        </select>
+        <MultiSelect id="country-list" enableSearch mode={'tags'} options={options} value={selectedCountries} onChange={update} />
       </header>
       <section className="App-content">
-        <LineChart cases={cases} />
-        <Status />
+        <ZingChart key={Date.now()} data={chartConfig} series={chartConfig.series} />
       </section>
       <footer className="App-footer">
         <p>Neil Brown - 2020</p>
