@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createRef } from 'react'
+import { useStore } from 'effector-react'
+
 import ZingChart from 'zingchart-react'
 import 'zingchart-react/dist/modules/zingchart-depth.min.js'
-import { useStore } from 'effector-react'
 import { MultiSelect } from 'react-sm-select'
-import { countryList, cases, ui, fetchCases, deaths as getDeaths, selectedCountries as getSelectedCountries, setSelectedCountries } from './api/store'
 import 'react-sm-select/dist/styles.css'
+
+import { countryList, fetchCountries } from './services/countries'
+import { loading } from './services/ui'
+import { casesList, fetchCases } from './services/cases'
+
 import './App.css'
 
 const Loading = () => {
-  const { loading } = useStore(ui)
+  const isLoading = useStore(loading)
   return (
-    <div className={loading ? 'show-loader' : 'hide-loader'}>
+    <div className={isLoading ? 'show-loader' : 'hide-loader'}>
       <svg width="120" height="30" xmlns="http://www.w3.org/2000/svg" fill="#fff">
         <circle cx="15" cy="15" r="15">
           <animate attributeName="r" from="15" to="15" begin="0s" dur="0.8s" values="15;9;15" calcMode="linear" repeatCount="indefinite" />
@@ -29,14 +34,36 @@ const Loading = () => {
   )
 }
 
+const config = {
+  type: 'line',
+  legend: {
+    x: '60px',
+    y: '70px',
+  },
+  series: [],
+}
+
 function App() {
-  const deaths = useStore(getDeaths)
-  console.log(deaths)
-  const selectedCountries = useStore(getSelectedCountries)
+  useEffect(() => {
+    fetchCountries();
+  }, [])
 
+  const chart = createRef()
   const countries = useStore(countryList)
+  const cases = useStore(casesList)
 
-  const options = [...countries].sort((a, b) => a.Country.localeCompare(b.Country)).map(({ Slug, Country }) => ({ value: Slug, label: Country }))
+  const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
+
+  const updateChart = (list = []) => {
+    if (chart.current) chart.current.setseriesdata({
+      data: selectedCountries.map(it => ({ values: (list['deaths'] || {})[it], text: it })),
+    })
+  }
+  casesList.watch(updateChart)
+
+  useEffect(() => {
+    updateChart(cases)
+  }, [selectedCountries]) // eslint-disable-line
 
   const update = (countries) => {
     setSelectedCountries(countries)
@@ -46,10 +73,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <MultiSelect id="country-list" enableSearch mode={'tags'} options={options} value={selectedCountries} onChange={update} />
+        <MultiSelect id="country-list" enableSearch mode={'tags'} options={countries} value={selectedCountries} onChange={update} />
       </header>
       <section className="App-content">
-        <ZingChart key={Date.now()} data={deaths} />
+        <ZingChart id={'zchart'} ref={chart} data={config} />
       </section>
       <footer className="App-footer">
         <p>Neil Brown - 2020</p>
