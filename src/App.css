@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  position: absolute;
+  position: fixed;
   text-align: left;
   width: 100vw;
   bottom: 0;

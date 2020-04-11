@@ -6,11 +6,19 @@ import 'zingchart-react/dist/modules/zingchart-depth.min.js'
 import { MultiSelect } from 'react-sm-select'
 import 'react-sm-select/dist/styles.css'
 
+import { Menu } from './components/Menu'
+
 import { countryList, fetchCountries } from './services/countries'
+import { category } from './services/menu'
 import { loading } from './services/ui'
 import { casesList, fetchCases } from './services/cases'
 
 import './App.css'
+
+category.watch(category => {
+  console.log(`category = ${category}`)
+  // updateCases(category)
+})
 
 const Loading = () => {
   const isLoading = useStore(loading)
@@ -45,31 +53,40 @@ const config = {
 
 function App() {
   useEffect(() => {
-    fetchCountries();
+    fetchCountries()
   }, [])
 
   const chart = createRef()
   const countries = useStore(countryList)
+  const selectedCategory = useStore(category)
 
   const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
 
   casesList.watch((list = []) => {
-    if (chart.current) chart.current.setseriesdata({
-      data: selectedCountries.map(it => ({ values: (list['deaths'] || {})[it], text: it })),
-    })
+    if (chart.current) {
+      console.log('updating watch list')
+      chart.current.setseriesdata({
+        data: selectedCountries.map(it => ({ values: (list[selectedCategory] || {})[it], text: it })),
+      })
+    }
   })
 
-  const update = (countries) => {
+  const updateCountries = countries => {
     setSelectedCountries(countries)
-    countries.map((country) => fetchCases(country))
+    updateCases()
+  }
+
+  const updateCases = () => {
+    selectedCountries.map(country => fetchCases(country, selectedCategory))
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <MultiSelect id="country-list" enableSearch mode={'tags'} options={countries} value={selectedCountries} onChange={update} />
+        <MultiSelect id="country-list" enableSearch mode={'tags'} options={countries} value={selectedCountries} onChange={updateCountries} />
       </header>
       <section className="App-content">
+        <Menu />
         <ZingChart id={'zchart'} ref={chart} data={config} />
       </section>
       <footer className="App-footer">
