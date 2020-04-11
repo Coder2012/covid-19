@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useStore } from 'effector-react'
 
 import ZingChart from 'zingchart-react'
@@ -14,11 +14,6 @@ import { loading } from './services/ui'
 import { casesList, fetchCases } from './services/cases'
 
 import './App.css'
-
-category.watch(category => {
-  console.log(`category = ${category}`)
-  // updateCases(category)
-})
 
 const Loading = () => {
   const isLoading = useStore(loading)
@@ -56,28 +51,23 @@ function App() {
     fetchCountries()
   }, [])
 
-  const chart = createRef()
   const countries = useStore(countryList)
+  const cases = useStore(casesList)
   const selectedCategory = useStore(category)
 
   const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
+  const [chartData, setChartData] = useState(config);
 
-  casesList.watch((list = []) => {
-    if (chart.current) {
-      console.log('updating watch list')
-      chart.current.setseriesdata({
-        data: selectedCountries.map(it => ({ values: (list[selectedCategory] || {})[it], text: it })),
-      })
-    }
-  })
+  useEffect(() => {
+    setChartData({
+      ...config,
+      series: selectedCountries.map(it => ({ values: (cases[selectedCategory] || {})[it], text: it })),
+    })
+  }, [cases]) // eslint-disable-line
 
   const updateCountries = countries => {
     setSelectedCountries(countries)
-    updateCases()
-  }
-
-  const updateCases = () => {
-    selectedCountries.map(country => fetchCases(country, selectedCategory))
+    countries.map(country => fetchCases(country, selectedCategory))
   }
 
   return (
@@ -87,7 +77,7 @@ function App() {
       </header>
       <section className="App-content">
         <Menu />
-        <ZingChart id={'zchart'} ref={chart} data={config} />
+        <ZingChart data={chartData} />
       </section>
       <footer className="App-footer">
         <p>Neil Brown - 2020</p>
