@@ -50,20 +50,20 @@ function App() {
     selectedCountries.map((country) => fetchCases(country, selectedCategory))
   }, [selectedCountries, selectedCategory])
 
-  useEffect(() => {
+  const updateChart = useCallback(() => {
     setChartData({
       ...config,
       series: selectedCountries.map((it) => ({ values: (cases[selectedCategory] || {})[it], text: it })),
     })
-  }, [cases]) // eslint-disable-line
+  }, [selectedCountries, selectedCategory, cases])
+
+  useEffect(() => {
+    updateChart()
+  }, [updateChart])
 
   useEffect(() => {
     retrieve()
-  }, [selectedCategory])
-
-  useEffect(() => {
-    retrieve()
-  }, [selectedCountries])
+  }, [retrieve])
 
   const updateCountries = (countries) => {
     setSelectedCountries(countries)
