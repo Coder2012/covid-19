@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useStore } from 'effector-react'
 
 import ZingChart from 'zingchart-react'
@@ -46,33 +46,21 @@ function App() {
   const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
   const [chartData, setChartData] = useState(config)
 
-  const retrieve = useCallback(() => {
+  useEffect(() => {
     selectedCountries.map((country) => fetchCases(country, selectedCategory))
   }, [selectedCountries, selectedCategory])
 
-  const updateChart = useCallback(() => {
+  useEffect(() => {
     setChartData({
       ...config,
       series: selectedCountries.map((it) => ({ values: (cases[selectedCategory] || {})[it], text: it })),
     })
   }, [selectedCountries, selectedCategory, cases])
 
-  useEffect(() => {
-    updateChart()
-  }, [updateChart])
-
-  useEffect(() => {
-    retrieve()
-  }, [retrieve])
-
-  const updateCountries = (countries) => {
-    setSelectedCountries(countries)
-  }
-
   return (
     <div className="App">
       <header className="App-header">
-        <MultiSelect id="country-list" enableSearch mode={'tags'} options={countries} value={selectedCountries} onChange={updateCountries} />
+        <MultiSelect id="country-list" enableSearch mode={'tags'} options={countries} value={selectedCountries} onChange={setSelectedCountries} />
       </header>
       <section className="App-content">
         <Menu />
