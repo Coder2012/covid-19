@@ -1,4 +1,4 @@
-import { createEvent, createStore } from 'effector'
+import { createEvent, createStore } from 'effector-logger'
 
 export const incrementLoading = createEvent()
 export const decrementLoading = createEvent()

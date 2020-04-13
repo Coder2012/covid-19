@@ -1,4 +1,4 @@
-import { combine, createEvent, createStore } from 'effector'
+import { combine, createEvent, createStore } from 'effector-logger'
 import { decrementLoading, incrementLoading } from './ui'
 
 export const setConfirmed = createEvent()

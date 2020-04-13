@@ -1,4 +1,4 @@
-import { createEffect, createStore } from 'effector'
+import { createEffect, createStore } from 'effector-logger'
 
 export const fetchCountries = createEffect({
   async handler() {
