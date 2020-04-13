@@ -1,0 +1,29 @@
+.menu {
+  &-button {
+    border: 1px solid rgb(201, 201, 201);
+    padding: 8px;
+    font-weight: bold;
+    $radius: 25px;
+
+    &:first-child {
+      border-radius: $radius 0 0 $radius;
+    }
+
+    &:last-child {
+      border-radius: 0 $radius $radius 0;
+    }
+
+    &--selected {
+      background: rgb(78, 177, 86);
+      color: white;
+    }
+
+    &--selected:first-child {
+      background: rgb(202, 148, 33);
+    }
+
+    &--selected:last-child {
+      background: rgb(224, 56, 56);
+    }
+  }
+}
