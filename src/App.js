@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useStore } from 'effector-react'
 
 import ZingChart from 'zingchart-react'
@@ -44,18 +44,29 @@ function App() {
   const selectedCategory = useStore(category)
 
   const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
-  const [chartData, setChartData] = useState(config);
+  const [chartData, setChartData] = useState(config)
+
+  const retrieve = useCallback(() => {
+    selectedCountries.map((country) => fetchCases(country, selectedCategory))
+  }, [selectedCountries, selectedCategory])
 
   useEffect(() => {
     setChartData({
       ...config,
-      series: selectedCountries.map(it => ({ values: (cases[selectedCategory] || {})[it], text: it })),
+      series: selectedCountries.map((it) => ({ values: (cases[selectedCategory] || {})[it], text: it })),
     })
   }, [cases]) // eslint-disable-line
 
-  const updateCountries = countries => {
+  useEffect(() => {
+    retrieve()
+  }, [selectedCategory])
+
+  useEffect(() => {
+    retrieve()
+  }, [selectedCountries])
+
+  const updateCountries = (countries) => {
     setSelectedCountries(countries)
-    countries.map(country => fetchCases(country, selectedCategory))
   }
 
   return (
