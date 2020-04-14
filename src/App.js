@@ -10,7 +10,6 @@ import { Menu } from './components/Menu'
 import { ReactComponent as Loader } from './components/icons/loader.svg'
 
 import { countryList, fetchCountries } from './services/countries'
-import { category } from './services/menu'
 import { loading } from './services/ui'
 import { casesList, fetchCases } from './services/cases'
 
@@ -24,6 +23,23 @@ const Loading = () => {
     </div>
   )
 }
+
+const menuItems = [
+  {
+    id: 'confirmed',
+    label: 'Confirmed',
+  },
+  {
+    id: 'recovered',
+    label: 'Recovered',
+  },
+  {
+    id: 'deaths',
+    label: 'Deaths',
+  },
+]
+
+const menuDefaultId = menuItems[2].id
 
 const config = {
   type: 'line',
@@ -41,7 +57,7 @@ function App() {
 
   const countries = useStore(countryList)
   const cases = useStore(casesList)
-  const selectedCategory = useStore(category)
+  const [selectedCategory, setSelectedCategory] = useState(menuDefaultId)
 
   const [selectedCountries, setSelectedCountries] = useState(['united-kingdom', 'italy'])
   const [chartData, setChartData] = useState(config)
@@ -63,7 +79,7 @@ function App() {
         <MultiSelect id="country-list" enableSearch mode={'tags'} options={countries} value={selectedCountries} onChange={setSelectedCountries} />
       </header>
       <section className="App-content">
-        <Menu />
+        <Menu data={menuItems} selectedId={selectedCategory} onChange={setSelectedCategory}/>
         <ZingChart data={chartData} />
       </section>
       <footer className="App-footer">

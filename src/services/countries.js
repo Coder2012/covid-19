@@ -1,4 +1,4 @@
-import { createEffect, createStore, createEvent } from 'effector-logger'
+import { createStore, createEvent } from 'effector-logger'
 
 const setCountries = createEvent('setCountries')
 
