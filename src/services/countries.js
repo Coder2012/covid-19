@@ -1,16 +1,12 @@
-import { createEffect, createStore } from 'effector-logger'
+import { createEffect, createStore, createEvent } from 'effector-logger'
 
-export const fetchCountries = createEffect({
-  async handler() {
-    const res = await fetch(`https://api.covid19api.com/countries`)
-    return res.json()
-  },
-})
+const setCountries = createEvent('setCountries')
 
-export const countryList = createStore([])
-  .on(fetchCountries.doneData,
-    (state, countries) =>
-      countries
-        .sort((a, b) => a.Country.localeCompare(b.Country))
-        .map(({ Slug, Country }) => ({ value: Slug, label: Country }))
-  )
+export const fetchCountries = async () => {
+  const countries = await (await fetch(`https://api.covid19api.com/countries`)).json()
+  setCountries(countries)
+}
+
+export const countryList = createStore([], {name: 'countries'}).on(setCountries, (state, countries) =>
+  countries.sort((a, b) => a.Country.localeCompare(b.Country)).map(({ Slug, Country }) => ({ value: Slug, label: Country }))
+)
