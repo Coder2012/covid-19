@@ -35,7 +35,7 @@ export const fetchCases = async (country, status = 'deaths') => {
     const cases = await (await fetch(`https://api.covid19api.com/total/country/${country}/status/${status}`)).json()
     caseEvents[status]({
       country,
-      cases: cases.map((it) => it.Cases),
+      cases: cases.map(({ Cases, Date }) => ({ Cases, Date })),
     })
   } catch (err) {
     console.log(`Error fetching ${country}: ${err}`)
