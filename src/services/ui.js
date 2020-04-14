@@ -1,8 +1,8 @@
-import { createEvent, createStore } from 'effector-logger'
+import { domain } from './domain'
 
-export const incrementLoading = createEvent('incrementLoading')
-export const decrementLoading = createEvent('decrementLoading')
+export const incrementLoading = domain.event('incrementLoading')
+export const decrementLoading = domain.event('decrementLoading')
 
-export const loading = createStore(0, {name: 'loading'})
+export const loading = domain.store(0, {name: 'loading'})
   .on(incrementLoading, val => val + 1)
   .on(decrementLoading, val => val - 1)

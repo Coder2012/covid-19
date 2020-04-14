@@ -1,9 +1,10 @@
-import { combine, createEvent, createStore } from 'effector-logger'
+import { combine } from 'effector'
+import { domain } from './domain'
 import { decrementLoading, incrementLoading } from './ui'
 
-export const setConfirmed = createEvent('setConfirmed')
-export const setRecovered = createEvent('setRecovered')
-export const setDeaths = createEvent('setDeaths')
+export const setConfirmed = domain.event('setConfirmed')
+export const setRecovered = domain.event('setRecovered')
+export const setDeaths = domain.event('setDeaths')
 
 const caseEvents = {
   confirmed: setConfirmed,
@@ -11,17 +12,17 @@ const caseEvents = {
   deaths: setDeaths,
 }
 
-export const confirmed = createStore({}, { name: 'confirmed' }).on(setConfirmed, (state, { country, cases }) => ({
+export const confirmed = domain.store({}, { name: 'confirmed' }).on(setConfirmed, (state, { country, cases }) => ({
   ...state,
   [country]: cases,
 }))
 
-export const recovered = createStore({}, { name: 'recovered' }).on(setRecovered, (state, { country, cases }) => ({
+export const recovered = domain.store({}, { name: 'recovered' }).on(setRecovered, (state, { country, cases }) => ({
   ...state,
   [country]: cases,
 }))
 
-export const deaths = createStore({}, { name: 'deaths' }).on(setDeaths, (state, { country, cases }) => ({
+export const deaths = domain.store({}, { name: 'deaths' }).on(setDeaths, (state, { country, cases }) => ({
   ...state,
   [country]: cases,
 }))
